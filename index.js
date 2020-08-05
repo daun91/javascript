@@ -41,27 +41,45 @@ function generateRandom(){
     return (Math.random()>0.5?1:-1) * Math.random();
 }
 
-function clickRandomHandler(event){
-    setInterval(clickRandomHandler, 1000); // 함수 내에서도 start 가능하나, 동일 함수일 경우 stack 된다
+function showItemPrice(event){
+    const priceDiv = document.querySelector(".currentPrice");
+    let currentPrice = document.createElement("span");
+    currentPrice.innerText = "Hello world";
+    priceDiv.appendChild(currentPrice); // array는 받을 수 없음
+}
+
+function appendRandomValues(event){
+    // setInterval(appendRandomValues, 1000); 
+    // 함수 내에서도 start 가능하나, 동일 함수일 경우 stack 된다
 
     let numberOfTraces = chartDiv.data.length;
+    let numberOfData = chartDiv.data[0]["y"].length;
+
     // trace가 0 또는 1개 있을 때는 그 1개의 trace에만 추가하고 싶고,
     // 2개 이상의 trace가 있을 때 1번째 trace는 무시하고자 한다
     // numberOfTraces = (numberOfTraces==0)||(numberOfTraces==1)?numberOfTraces:numberOfTraces-1
     // let yData = new Array(numberOfTraces).fill([Math.random()]);
     // 위처럼 할 경우 random이 생성되는 대로 같은 랜덤 값이 배열에 입력된다
     let yData = new Array(numberOfTraces).fill(0).map(() => [(Math.random()>0.5?1:-1)*Math.random()]);
-    console.log(yData);
     let indicies = Array.from(new Array(numberOfTraces), (_, i)=>i);
+
     if(numberOfTraces>1){
         // indicies = indicies.shift();
         yData.splice(0, 1);
         indicies.splice(0,1);
     }
-    console.log(indicies);
     Plotly.extendTraces(chartDiv, {
         y: yData
     }, indicies); 
+
+    // 50이 넘을 경우 range를 50으로 지정
+    let xRange = numberOfData>50?[numberOfData-50, numberOfData]:[0, numberOfData];
+
+    const layout = {
+        xaxis:{ range: xRange },
+        yaxis:{ range: [-1,1] }
+    };
+    Plotly.relayout(chartDiv, layout);
 
     // y의 첫번째 값은 배열이여야 한다 > y자체는 2차 배열이어야한다.
     // extendTrace의 마지막 인자는 array of length 여야한다. int 오면 안됨
@@ -75,18 +93,27 @@ function clickRandomHandler(event){
 }
 
 const chartDiv = document.querySelector(".chart");
-const btn1 = document.getElementById("item1");
-const btn2 = document.getElementById("item2");
+const btn1 = document.getElementById("addTrace");
+const btn2 = document.getElementById("addAnotherTrace");
 const btnShowCurrentItem = document.getElementById("showCurrentItem");
 const currentItem = document.getElementById("itemsSelect");
 const appendRandom = document.getElementById("appendRandom");
 
+const selectItemBtn = document.getElementById("selectItem");
+
+
+let intervalTriggered = false;
+
 btn1.addEventListener("click", item1ClickHandler);
 btn2.addEventListener("click", item2ClickHandler);
 btnShowCurrentItem.addEventListener("click", showCurrentItem);
-appendRandom.addEventListener("click", clickRandomHandler);
+appendRandom.addEventListener("click", appendRandomValues);
 
-const elementsNumber = 500;
+selectItemBtn.addEventListener("click", showItemPrice);
+
+setInterval(appendRandomValues, 1000);
+
+const elementsNumber = 100;
 let trace = {
     // x: Array.from(new Array(elementsNumber), (_, i) => Math.sin((i+1)*0.1)),
     y: Array.from(new Array(elementsNumber), (_, i) => Math.sin((i+1)*0.1)),
@@ -104,7 +131,10 @@ const emptyData = {
     y: [0],
     type:"lines+markers"
 };
-Plotly.newPlot(chartDiv, [{y:[]}], layout);
+const config = {
+    responsive: true
+};
+Plotly.newPlot(chartDiv, [{y:[]}], layout, config);
 // plotly 객체가 제대로 initial 되지 않으면 gd.data must be an array 에러 발생할 수 있다
 // data 객체는 반드시 array of objects
 
