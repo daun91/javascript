@@ -42,14 +42,23 @@ function generateRandom(){
 }
 
 function clickRandomHandler(event){
-    console.log("clicked");
-    let tracesNumber = chartDiv.data.length;
+    setInterval(clickRandomHandler, 1000); // 함수 내에서도 start 가능하나, 동일 함수일 경우 stack 된다
+
+    let numberOfTraces = chartDiv.data.length;
     // trace가 0 또는 1개 있을 때는 그 1개의 trace에만 추가하고 싶고,
     // 2개 이상의 trace가 있을 때 1번째 trace는 무시하고자 한다
-    // tracesNumber = (tracesNumber==0)||(tracesNumber==1)?tracesNumber:tracesNumber-1
-    const yData = Array.from(new Array(tracesNumber).fill([generateRandom()]));
-    const indicies = Array.from(new Array(tracesNumber), (_, i)=>i);
-
+    // numberOfTraces = (numberOfTraces==0)||(numberOfTraces==1)?numberOfTraces:numberOfTraces-1
+    // let yData = new Array(numberOfTraces).fill([Math.random()]);
+    // 위처럼 할 경우 random이 생성되는 대로 같은 랜덤 값이 배열에 입력된다
+    let yData = new Array(numberOfTraces).fill(0).map(() => [(Math.random()>0.5?1:-1)*Math.random()]);
+    console.log(yData);
+    let indicies = Array.from(new Array(numberOfTraces), (_, i)=>i);
+    if(numberOfTraces>1){
+        // indicies = indicies.shift();
+        yData.splice(0, 1);
+        indicies.splice(0,1);
+    }
+    console.log(indicies);
     Plotly.extendTraces(chartDiv, {
         y: yData
     }, indicies); 
