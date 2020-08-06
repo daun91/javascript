@@ -111,7 +111,7 @@ appendRandom.addEventListener("click", appendRandomValues);
 
 selectItemBtn.addEventListener("click", showItemPrice);
 
-setInterval(appendRandomValues, 1000);
+// setInterval(appendRandomValues, 1000);
 
 const elementsNumber = 100;
 let trace = {
@@ -122,8 +122,9 @@ let trace = {
 
 const layout = {
     title: {
-        text: "Hello world!"
-    }
+        text: "유슬아 내 노트북에 진유슬 스티커 뜯기고 있어"
+    },
+    yaxis: {range:[0, 150]}
 };
 
 const data = [trace];
