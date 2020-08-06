@@ -8,9 +8,10 @@ app.use(cors());
 
 const path = require("path");
 
-app.get("/", (req, res)=>{
+app.get("/api/:name", (req, res)=>{
+    const name = req.params.name;
     res.header("Content-Type","application/json")
-    res.sendFile(path.join(__dirname, "./ibm.json"))
+    res.sendFile(path.join(__dirname, `./src/${name}.json`))
 });
 
 app.listen(3035, ()=>{ console.log("Listening") });

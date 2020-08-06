@@ -4,7 +4,8 @@
 const API_KEY = "U1MWIB4VDT66YUSA";
 const API_URL_APL = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=APL&outputsize=full&apikey=U1MWIB4VDT66YUSA`;
 const API_URL_IBM = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=IBM&outputsize=full&apikey=U1MWIB4VDT66YUSA";
-const API_LOCAL_IBM = "http://localhost:3035/";
+const API_LOCAL_ROOT = "http://localhost:3035/api/"
+const API_LOCAL_IBM = API_LOCAL_ROOT + "ibm";
 // local에서 api 사용하면 CORS 이슈 있음
 // npm i cors -D 및 const cors = require("cors"), app.use(cors())
 
@@ -49,6 +50,25 @@ function printPrice(price){
 // });
 
 
+function addItem(item){
+    axios.get(API_LOCAL_ROOT + item)
+    .then(response => {
+        return response.data["Time Series (Daily)"];
+    })
+    .then(response => {
+        const keys = Object.keys(response);
+        const yData = keys.map((v, _) => response[v]["2. high"]);
+        // arrow function 사용시 뒤의 함수의 실행 문장은 {} 유무에 따라 많이 다르다
+        const trace = {
+            x: keys,
+            y: yData,
+            name : item,
+        };
+        Plotly.addTraces(chartDiv, trace);
+    });
+}
+
+
 axios.get(API_LOCAL_IBM)
 .then(response => {
     console.log(response);
@@ -56,8 +76,7 @@ axios.get(API_LOCAL_IBM)
 })
 .then(response => {
     const keys = Object.keys(response);
-    const valueLength = keys.length;
-    const prices = keys.map((v, i) => response[v][ "2. high"]);
+    const prices = keys.map((v, i) => response[v]["2. high"]);
     Plotly.addTraces(chartDiv, {
         x: keys,
         y: prices,

@@ -41,11 +41,16 @@ function generateRandom(){
     return (Math.random()>0.5?1:-1) * Math.random();
 }
 
-function showItemPrice(event){
+function addText(){
     const priceDiv = document.querySelector(".currentPrice");
     let currentPrice = document.createElement("span");
     currentPrice.innerText = "Hello world";
     priceDiv.appendChild(currentPrice); // array는 받을 수 없음
+}
+
+function showItemPrice(event){
+    const item = currentItem.options[currentItem.selectedIndex].value;
+    addItem(item);
 }
 
 function appendRandomValues(event){
@@ -122,9 +127,9 @@ let trace = {
 
 const layout = {
     title: {
-        text: "유슬아 내 노트북에 진유슬 스티커 뜯기고 있어"
+        text: "Stock prices over the years"
     },
-    yaxis: {range:[0, 150]}
+    // yaxis: {range:[0, 150]}
 };
 
 const data = [trace];
@@ -133,7 +138,7 @@ const emptyData = {
     type:"lines+markers"
 };
 const config = {
-    responsive: true
+    responsive: true,
 };
 Plotly.newPlot(chartDiv, [{y:[]}], layout, config);
 // plotly 객체가 제대로 initial 되지 않으면 gd.data must be an array 에러 발생할 수 있다
